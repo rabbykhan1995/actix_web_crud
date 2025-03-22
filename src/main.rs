@@ -13,10 +13,11 @@ mod handler;
 mod middleware;
 mod model;
 use handler::{
-    admin::admin_handler::get_admin,
-    user::user_handler::{create_user, get_user},
+    admin_handler::get_admin,
+    user_handler::{create_user, get_user},
 };
-use middleware::user::user_middleware::my_middleware;
+
+use middleware::{admin_middleware, user_middleware};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
