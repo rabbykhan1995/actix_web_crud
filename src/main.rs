@@ -1,7 +1,7 @@
 use actix_web::{
     App, HttpServer,
     middleware::from_fn,
-    web::{self, get, post, scope},
+    web::{self, delete, get, post, scope},
 };
 
 use dotenv::dotenv;
@@ -14,7 +14,7 @@ mod middleware;
 mod model;
 use handler::{
     admin_handler::get_admin,
-    user_handler::{create_user, get_user},
+    user_handler::{create_user, delete_user, get_user},
 };
 
 use middleware::{admin_middleware, user_middleware};
@@ -37,22 +37,16 @@ async fn main() -> std::io::Result<()> {
                     scope("/user")
                         // .wrap(from_fn(my_middleware)) // Apply middleware only for "/user"
                         .route("/get-user/{id}", get().to(get_user))
-                        .route("/create-user", post().to(create_user)), // Admin Routes (outside "/user")
-                )
-                .service(scope("/admin").route("/get-admin", get().to(get_admin))),
+                        .route("/create-user", post().to(create_user))
+                        .route(
+                            "/delete-user/{id}",
+                            delete().to(delete_user), // Admin Routes (outside "/user")
+                        )
+                        .service(scope("/admin").route("/get-admin", get().to(get_admin))),
+                ),
         )
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
-
-// #[derive(Debug, Serialize, Deserialize)]
-// struct User {
-//     name: String,
-//     age: i16,
-// }
-// async fn another_user_handler(body: web::Json<User>) -> impl Responder {
-//     println!("{:?}", body); // Fixed formatting issue
-//     HttpResponse::Ok().body("Hello from another")
-// }

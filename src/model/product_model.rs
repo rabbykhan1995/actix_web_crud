@@ -4,19 +4,22 @@ use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
-pub struct User {
+pub struct Product {
     pub id: Uuid,
     pub name: String,
-    pub email: String,
-    pub password: String,
-    pub user_types: Vec<String>,
+    pub title: String,
+    pub stock: i32,
+    pub price: i32,
+    pub created_by: i32,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CreateUser {
+pub struct CreateProduct {
     pub name: String,
-    pub email: String,
-    pub password: String,
+    pub title: String,
+    pub stock: i32,
+    pub price: i32,
+    pub created_by: i32,
 }
