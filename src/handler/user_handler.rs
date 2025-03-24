@@ -1,6 +1,7 @@
 use actix_web::{HttpResponse, Responder, web};
 use sqlx::PgPool;
 use uuid::Uuid;
+use validator::Validate;
 
 use crate::model::{CreateUser, User};
 
@@ -25,6 +26,11 @@ pub async fn create_user(
     db_pool: web::Data<PgPool>,
     body: web::Json<CreateUser>,
 ) -> impl Responder {
+    // First check the email which come from request body is valid or not.if valid then proceed, or return response.
+    if let Err(errors) = body.validate() {
+        return HttpResponse::BadRequest().json(errors);
+    }
+
     let name = &body.name;
     let email = &body.email;
     let password = &body.password;

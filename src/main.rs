@@ -14,6 +14,8 @@ mod middleware;
 mod model;
 use handler::{
     admin_handler::get_admin,
+    order_handler::create_order,
+    product_handler::{create_product, get_exact_product},
     user_handler::{create_user, delete_user, get_user},
 };
 
@@ -32,6 +34,11 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new().app_data(web::Data::new(pool.clone())).service(
             web::scope("/v1")
+                .service(
+                    scope("/public")
+                        .route("/product/{id}", get().to(get_exact_product))
+                        .route("/product/create-product/{id}", post().to(create_product)),
+                )
                 // User Routes with Middleware
                 .service(
                     scope("/user")
@@ -41,9 +48,9 @@ async fn main() -> std::io::Result<()> {
                         .route(
                             "/delete-user/{id}",
                             delete().to(delete_user), // Admin Routes (outside "/user")
-                        )
-                        .service(scope("/admin").route("/get-admin", get().to(get_admin))),
-                ),
+                        ), // .service(scope("/admin").route("/get-admin", get().to(get_admin)))
+                )
+                .service(scope("/order").route("/create-order/{id}", post().to(create_order))),
         )
     })
     .bind(("127.0.0.1", 8080))?
