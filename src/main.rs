@@ -3,7 +3,6 @@ use actix_web::{
     middleware::from_fn,
     web::{self, delete, get, post, scope},
 };
-
 use dotenv::dotenv;
 use std::env;
 
@@ -19,7 +18,7 @@ use handler::{
     user_handler::{create_user, delete_user, get_user},
 };
 
-use middleware::{admin_middleware, user_middleware};
+use middleware::{admin_middleware::is_admin_middleware, user_middleware};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -50,7 +49,12 @@ async fn main() -> std::io::Result<()> {
                             delete().to(delete_user), // Admin Routes (outside "/user")
                         ), // .service(scope("/admin").route("/get-admin", get().to(get_admin)))
                 )
-                .service(scope("/order").route("/create-order/{id}", post().to(create_order))),
+                .service(scope("/order").route("/create-order/{id}", post().to(create_order)))
+                .service(
+                    scope("/admin")
+                        .wrap(from_fn(is_admin_middleware))
+                        .route("/check", get().to(get_admin)),
+                ),
         )
     })
     .bind(("127.0.0.1", 8080))?

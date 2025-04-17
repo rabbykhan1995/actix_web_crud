@@ -1,5 +1,9 @@
-use actix_web::{Responder, HttpResponse};
+use actix_web::{HttpResponse, Responder};
+
+use crate::model::ResponseJson;
 
 pub async fn get_admin() -> impl Responder {
-    HttpResponse::Ok().body("hello from admin")
+    HttpResponse::Ok().json(ResponseJson {
+        msg: "This is admin Route",
+    })
 }

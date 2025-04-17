@@ -31,8 +31,6 @@ pub async fn create_product(
     path: web::Path<Uuid>,
 ) -> impl Responder {
     let user_id = path.into_inner();
-    println!("Received request: {:?}", body);
-    println!("User ID: {:?}", user_id);
 
     if let Err(error) = body.validate() {
         return HttpResponse::BadRequest().json(error);
